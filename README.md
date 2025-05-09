@@ -1,1 +1,0 @@
-# akilli-sehir-ulasim-optimizasyonu
