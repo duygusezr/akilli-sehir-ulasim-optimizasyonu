@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartCityTransportMVC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e80ea99cac72e0263f4a7b67f550ccd67b52c85")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a641c29c239b19f25518344432216664836dbd3d")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartCityTransportMVC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartCityTransportMVC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

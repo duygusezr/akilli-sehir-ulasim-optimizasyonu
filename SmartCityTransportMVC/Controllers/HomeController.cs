@@ -12,6 +12,19 @@ namespace SmartCityTransportMVC.Controllers
         private static readonly RouteHashTable _trafficTable = new();
         private static readonly RouteLinkedList _routeList = new();
 
+        // Statik kurulum (ilk �al��t�rmada sadece 1 kez yap�ls�n)
+        private static bool isInitialized = false;
+
+        public HomeController()
+        {
+            if (!isInitialized)
+            {
+                InitializeData();
+                isInitialized = true;
+            }
+        }
+        
+        
         public IActionResult Index()
         {
             return View();

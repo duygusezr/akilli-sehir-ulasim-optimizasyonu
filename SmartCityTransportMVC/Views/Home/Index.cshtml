@@ -1,8 +1,190 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Akıllı Şehir Ulaşım Sistemi";
+    var routeComparison = ViewBag.RouteComparison as List<(List<string> Route, List<double> Traffic, string Label, bool IsOptimized)> ?? new();
+    var coords = ViewBag.Coords as Dictionary<string, (double, double)> ?? new();
+    var route = ViewBag.Route as List<string> ?? new List<string>();
+    var traffic = ViewBag.Traffic as List<double> ?? new List<double>();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    #map { height: 500px; margin-top: 20px; }
+</style>
+
+<h1 class="text-center">Akıllı Şehir Ulaşım Sistemi</h1>
+
+<form method="post" asp-action="FindRoute" class="mb-4">
+    <div class="row g-3 justify-content-center">
+        <div class="col-md-4">
+            <input name="Start" class="form-control" list="stops" placeholder="Başlangıç durağı" required />
+        </div>
+        <div class="col-md-4">
+            <input name="End" class="form-control" list="stops" placeholder="Bitiş durağı" required />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Rota Bul</button>
+        </div>
+    </div>
+    <datalist id="stops">
+        @foreach (var key in coords.Keys)
+        {
+            <option value="@key" />
+        }
+    </datalist>
+</form>
+
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger text-center">@ViewBag.Error</div>
+}
+else if (routeComparison.Count > 0)
+{
+    foreach (var item in routeComparison)
+    {
+        <h5 class="mt-4 @(item.IsOptimized ? "" : "text-danger")">@item.Label</h5>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Duraklar Arası</th>
+                    <th>Trafik Yoğunluğu</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < item.Route.Count - 1; i++)
+                {
+                    double trafficValue = item.Traffic[i];
+                    int percent = (int)Math.Clamp(trafficValue * 100, 0, 100);
+                    string color = TrafficColor(trafficValue);
+
+                    <tr class="@(item.IsOptimized ? "" : "table-danger")">
+                        <td>@(i + 1)</td>
+                        <td>@item.Route[i] → @item.Route[i + 1]</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="progress w-100 me-2" style="height: 20px;">
+                                    <div class="progress-bar @color" style="width:@percent%">
+                                        <span class="text-white fw-bold">@percent%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger text-center">@ViewBag.Error</div>
+}
+else if (route.Count > 0)
+{
+    <div class="alert alert-success text-center">
+        Rota bulundu: @string.Join(" → ", route)
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Duraklar Arası</th>
+                <th>Trafik Yoğunluğu</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < route.Count - 1; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@route[i] → @route[i + 1]</td>
+                    <td>
+                        @{
+                            double trafficValue = traffic[i];
+                            int percent = (int)Math.Clamp(trafficValue * 100, 0, 100);
+                            string color = TrafficColor(trafficValue);
+                        }
+
+                        <div class="d-flex align-items-center">
+                            <div class="progress w-100 me-2" style="height: 20px;">
+                                <div class="progress-bar @color" role="progressbar" style="width:@percent%">
+                                    <span class="text-white fw-bold">@percent%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+
+}
+<div id="map"></div>
+
+@{
+    var mainRoute = (ViewBag.RouteComparison as List<(List<string> Route, List<double> Traffic, string Label, bool IsOptimized)>)
+                    ?.FirstOrDefault(r => r.IsOptimized).Route ?? new List<string>();
+    var mainRouteTraffic = (ViewBag.RouteComparison as List<(List<string> Route, List<double> Traffic, string Label, bool IsOptimized)>)
+                    ?.FirstOrDefault(r => r.IsOptimized).Traffic ?? new List<double>();
+}
+
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        const coords = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+        coords.ToDictionary(c => c.Key, c => new[] { c.Value.Item1, c.Value.Item2 })
+        ));
+        const route = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(mainRoute));
+        const trafficData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(mainRouteTraffic));
+
+        //  Harita her zaman yüklensin
+        const map = L.map('map').setView([41.01, 28.97], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        //  Tüm durakları haritada işaretle
+        for (const [name, coord] of Object.entries(coords)) {
+            L.marker(coord).addTo(map).bindPopup(name);
+        }
+
+        //  Sadece rota varsa çiz
+        if (route.length > 0) {
+            for (let i = 0; i < route.length - 1; i++) {
+                const from = coords[route[i]];
+                const to = coords[route[i + 1]];
+                const traffic = trafficData[i];
+
+                let color = 'green';
+                if (traffic >= 0.7) color = 'red';
+                else if (traffic >= 0.4) color = 'orange';
+
+                L.polyline([from, to], { color, weight: 5 }).addTo(map);
+            }
+
+            map.fitBounds(route.map(stop => coords[stop]));
+        }
+    </script>
+
+}
+
+@functions {
+    string TrafficColor(double value)
+    {
+        value = Math.Clamp(value, 0, 1);
+        if (value < 0.4) return "bg-success";   // yeşil
+        if (value < 0.7) return "bg-warning";  // sarı
+        return "bg-danger";                    // kırmızı
+    }
+}
+
+
+
