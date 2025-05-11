@@ -36,7 +36,7 @@ namespace SmartCityTransportMVC.Controllers
         {
             if (string.IsNullOrEmpty(request.Start) || string.IsNullOrEmpty(request.End))
             {
-                ViewBag.Error = "Ba�lang�� ve biti� duraklar� girilmelidir.";
+                ViewBag.Error = "Baslangic ve bitis duraklari girilmelidir.";
                 return View("Index");
             }
 
@@ -44,7 +44,7 @@ namespace SmartCityTransportMVC.Controllers
 
             if (alternativePaths.Count == 0)
             {
-                ViewBag.Error = $"{request.Start} ile {request.End} aras�nda alternatif rota bulunamad�.";
+                ViewBag.Error = $"{request.Start} ile {request.End} arasinda alternatif rota bulunamadi.";
                 return View("Index");
             }
 
@@ -97,23 +97,23 @@ namespace SmartCityTransportMVC.Controllers
         {
             var stops = new Dictionary<string, (double, double)>
         {
-        { "Kad�k�y", (40.9923, 29.0295) },
-        { "�sk�dar", (41.0254, 29.0146) },
-        { "Be�ikta�", (41.0426, 29.0027) },
+        { "Kadikoy", (40.9923, 29.0295) },
+        { "Uskudar", (41.0254, 29.0146) },
+        { "Besiktas", (41.0426, 29.0027) },
         { "Taksim", (41.0368, 28.9849) },
         { "Levent", (41.0811, 29.0108) },
-        { "Bak�rk�y", (40.9744, 28.8718) },
-        { "Mecidiyek�y", (41.0672, 28.9862) },
-        { "�i�li", (41.0605, 28.9871) },
-        { "Emin�n�", (41.0165, 28.9483) },
-        { "Yenikap�", (41.0055, 28.9533) },
+        { "Bakirkoy", (40.9744, 28.8718) },
+        { "Mecidiyekoy", (41.0672, 28.9862) },
+        { "Sisli", (41.0605, 28.9871) },
+        { "Eminonu", (41.0165, 28.9483) },
+        { "Yenikapi", (41.0055, 28.9533) },
         { "Zincirlikuyu", (41.0705, 29.0139) },
-        { "Topkap�", (41.0194, 28.9173) },
+        { "Topkapi", (41.0194, 28.9173) },
         { "Aksaray", (41.0129, 28.9514) },
         { "Fatih", (41.0183, 28.9485) },
-        { "Kabata�", (41.0325, 28.9798) }
+        { "Kabatas", (41.0325, 28.9798) }
         };
-        
+
 
 
 
@@ -121,84 +121,84 @@ namespace SmartCityTransportMVC.Controllers
             {
                 _cityGraph.AddStop(stop.Key, stop.Value);
             }
-            AddRouteWithTraffic("Kad�k�y", "�sk�dar", 5.2);
-            AddRouteWithTraffic("�sk�dar", "Be�ikta�", 4.8);
-            AddRouteWithTraffic("Be�ikta�", "Taksim", 3.1);
+            AddRouteWithTraffic("Kadikoy", "Uskudar", 5.2);
+            AddRouteWithTraffic("Uskudar", "Besiktas", 4.8);
+            AddRouteWithTraffic("Besiktas", "Taksim", 3.1);
             AddRouteWithTraffic("Taksim", "Levent", 6.7);
-            AddRouteWithTraffic("Be�ikta�", "Levent", 5.3);
-            AddRouteWithTraffic("Taksim", "Bak�rk�y", 12.5);
-            AddRouteWithTraffic("Kad�k�y", "Bak�rk�y", 15.2);
-            AddRouteWithTraffic("�sk�dar", "Taksim", 5.9);
-            AddRouteWithTraffic("Levent", "Bak�rk�y", 14.3);
-            AddRouteWithTraffic("Mecidiyek�y", "�i�li", 1.2);
-            AddRouteWithTraffic("�i�li", "Taksim", 2.5);
-            AddRouteWithTraffic("Mecidiyek�y", "Zincirlikuyu", 2.0);
+            AddRouteWithTraffic("Besiktas", "Levent", 5.3);
+            AddRouteWithTraffic("Taksim", "Bakirkoy", 12.5);
+            AddRouteWithTraffic("Kadikoy", "Bakirkoy", 15.2);
+            AddRouteWithTraffic("Uskudar", "Taksim", 5.9);
+            AddRouteWithTraffic("Levent", "Bakirkoy", 14.3);
+            AddRouteWithTraffic("Mecidiyekoy", "Sisli", 1.2);
+            AddRouteWithTraffic("Sisli", "Taksim", 2.5);
+            AddRouteWithTraffic("Mecidiyekoy", "Zincirlikuyu", 2.0);
             AddRouteWithTraffic("Zincirlikuyu", "Levent", 1.5);
-            AddRouteWithTraffic("Topkap�", "Bak�rk�y", 5.5);
-            AddRouteWithTraffic("Topkap�", "Emin�n�", 4.0);
-            AddRouteWithTraffic("Emin�n�", "Taksim", 3.5);
-            AddRouteWithTraffic("Emin�n�", "�sk�dar", 3.3);
-            AddRouteWithTraffic("Yenikap�", "Topkap�", 2.8);
-            AddRouteWithTraffic("Yenikap�", "Bak�rk�y", 4.0);
-            AddRouteWithTraffic("Yenikap�", "Emin�n�", 2.4);
-            AddRouteWithTraffic("Topkap�", "Fatih", 1.5);
+            AddRouteWithTraffic("Topkapi", "Bakirkoy", 5.5);
+            AddRouteWithTraffic("Topkapi", "Eminonu", 4.0);
+            AddRouteWithTraffic("Eminonu", "Taksim", 3.5);
+            AddRouteWithTraffic("Eminonu", "Uskudar", 3.3);
+            AddRouteWithTraffic("Yenikapi", "Topkapi", 2.8);
+            AddRouteWithTraffic("Yenikapi", "Bakirkoy", 4.0);
+            AddRouteWithTraffic("Yenikapi", "Eminonu", 2.4);
+            AddRouteWithTraffic("Topkapi", "Fatih", 1.5);
             AddRouteWithTraffic("Fatih", "Aksaray", 1.2);
-            AddRouteWithTraffic("Aksaray", "Yenikap�", 1.0);
-            AddRouteWithTraffic("Aksaray", "Emin�n�", 1.7);
-            AddRouteWithTraffic("Fatih", "Emin�n�", 1.3);
-            AddRouteWithTraffic("Kabata�", "Be�ikta�", 1.2);
-            AddRouteWithTraffic("Kabata�", "Taksim", 1.8);
-            AddRouteWithTraffic("Kabata�", "Emin�n�", 2.1);
-            AddRouteWithTraffic("�i�li", "Zincirlikuyu", 1.8);
-            AddRouteWithTraffic("Mecidiyek�y", "Levent", 2.3);
-            AddRouteWithTraffic("Aksaray", "Topkap�", 2.0);
-            AddRouteWithTraffic("Kad�k�y", "Kabata�", 7.5);
-            AddRouteWithTraffic("Kad�k�y", "Emin�n�", 6.2);
-            AddRouteWithTraffic("Taksim", "Kabata�", 1.5);
-            AddRouteWithTraffic("Kabata�", "�sk�dar", 4.0);
-            AddRouteWithTraffic("Be�ikta�", "Levent", 6.1);
-            AddRouteWithTraffic("Fatih", "Topkap�", 2.2);
-            AddRouteWithTraffic("Topkap�", "Aksaray", 2.1);
-            AddRouteWithTraffic("Fatih", "Mecidiyek�y", 4.5);  // ger�ek�i de�ilse bile test i�in olur
-            AddRouteWithTraffic("Emin�n�", "Aksaray", 1.9);
-            AddRouteWithTraffic("Fatih", "Kabata�", 3.0);
-            AddRouteWithTraffic("Fatih", "Be�ikta�", 4.5);
-            AddRouteWithTraffic("Fatih", "�i�li", 4.2);
+            AddRouteWithTraffic("Aksaray", "Yenikapi", 1.0);
+            AddRouteWithTraffic("Aksaray", "Eminonu", 1.7);
+            AddRouteWithTraffic("Fatih", "Eminonu", 1.3);
+            AddRouteWithTraffic("Kabatas", "Besiktas", 1.2);
+            AddRouteWithTraffic("Kabatas", "Taksim", 1.8);
+            AddRouteWithTraffic("Kabatas", "Eminonu", 2.1);
+            AddRouteWithTraffic("Sisli", "Zincirlikuyu", 1.8);
+            AddRouteWithTraffic("Mecidiyekoy", "Levent", 2.3);
+            AddRouteWithTraffic("Aksaray", "Topkapi", 2.0);
+            AddRouteWithTraffic("Kadikoy", "Kabatas", 7.5);
+            AddRouteWithTraffic("Kadikoy", "Eminonu", 6.2);
+            AddRouteWithTraffic("Taksim", "Kabatas", 1.5);
+            AddRouteWithTraffic("Kabatas", "Uskudar", 4.0);
+            AddRouteWithTraffic("Besiktas", "Levent", 6.1);
+            AddRouteWithTraffic("Fatih", "Topkapi", 2.2);
+            AddRouteWithTraffic("Topkapi", "Aksaray", 2.1);
+            AddRouteWithTraffic("Fatih", "Mecidiyekoy", 4.5);
+            AddRouteWithTraffic("Eminonu", "Aksaray", 1.9);
+            AddRouteWithTraffic("Fatih", "Kabatas", 3.0);
+            AddRouteWithTraffic("Fatih", "Besiktas", 4.5);
+            AddRouteWithTraffic("Fatih", "Sisli", 4.2);
             AddRouteWithTraffic("Aksaray", "Taksim", 4.0);
-            AddRouteWithTraffic("Aksaray", "Be�ikta�", 4.8);
+            AddRouteWithTraffic("Aksaray", "Besiktas", 4.8);
             AddRouteWithTraffic("Aksaray", "Levent", 6.2);
-            AddRouteWithTraffic("Topkap�", "�i�li", 4.0);
-            AddRouteWithTraffic("Topkap�", "Mecidiyek�y", 4.3);
-            AddRouteWithTraffic("Yenikap�", "Be�ikta�", 5.2);
-            AddRouteWithTraffic("Yenikap�", "Kabata�", 4.1);
-            AddRouteWithTraffic("Yenikap�", "Zincirlikuyu", 6.3);
-            AddRouteWithTraffic("Yenikap�", "Mecidiyek�y", 5.5);
-            AddRouteWithTraffic("Emin�n�", "Levent", 5.7);
-            AddRouteWithTraffic("Emin�n�", "Zincirlikuyu", 6.2);
-            AddRouteWithTraffic("Kabata�", "�i�li", 3.8);
-            AddRouteWithTraffic("Kabata�", "Zincirlikuyu", 4.2);
-            AddRouteWithTraffic("Kad�k�y", "Levent", 9.3);       // Uzun ama alternatifli
-            AddRouteWithTraffic("Kad�k�y", "�i�li", 8.8);
-            AddRouteWithTraffic("Kad�k�y", "Taksim", 7.6);
-            AddRouteWithTraffic("Kad�k�y", "Zincirlikuyu", 9.5);
-            AddRouteWithTraffic("�sk�dar", "Zincirlikuyu", 6.9);
-            AddRouteWithTraffic("�sk�dar", "�i�li", 6.4);
-            AddRouteWithTraffic("�sk�dar", "Mecidiyek�y", 6.1);
-            AddRouteWithTraffic("Zincirlikuyu", "Mecidiyek�y", 2.1);
-            AddRouteWithTraffic("Zincirlikuyu", "Be�ikta�", 2.2);
-            AddRouteWithTraffic("Kabata�", "Levent", 4.9);
-            AddRouteWithTraffic("Levent", "�i�li", 2.0);
-            AddRouteWithTraffic("Levent", "Mecidiyek�y", 1.9);
-            AddRouteWithTraffic("Mecidiyek�y", "Be�ikta�", 2.8);
-            AddRouteWithTraffic("�i�li", "Be�ikta�", 2.2);
-            AddRouteWithTraffic("Taksim", "Mecidiyek�y", 2.5);
-            AddRouteWithTraffic("Topkap�", "Kabata�", 5.2);
-            AddRouteWithTraffic("Yenikap�", "Taksim", 4.5);
-            AddRouteWithTraffic("Aksaray", "Kabata�", 3.9);
+            AddRouteWithTraffic("Topkapi", "Sisli", 4.0);
+            AddRouteWithTraffic("Topkapi", "Mecidiyekoy", 4.3);
+            AddRouteWithTraffic("Yenikapi", "Besiktas", 5.2);
+            AddRouteWithTraffic("Yenikapi", "Kabatas", 4.1);
+            AddRouteWithTraffic("Yenikapi", "Zincirlikuyu", 6.3);
+            AddRouteWithTraffic("Yenikapi", "Mecidiyekoy", 5.5);
+            AddRouteWithTraffic("Eminonu", "Levent", 5.7);
+            AddRouteWithTraffic("Eminonu", "Zincirlikuyu", 6.2);
+            AddRouteWithTraffic("Kabatas", "Sisli", 3.8);
+            AddRouteWithTraffic("Kabatas", "Zincirlikuyu", 4.2);
+            AddRouteWithTraffic("Kadikoy", "Levent", 9.3);
+            AddRouteWithTraffic("Kadikoy", "Sisli", 8.8);
+            AddRouteWithTraffic("Kadikoy", "Taksim", 7.6);
+            AddRouteWithTraffic("Kadikoy", "Zincirlikuyu", 9.5);
+            AddRouteWithTraffic("Uskudar", "Zincirlikuyu", 6.9);
+            AddRouteWithTraffic("Uskudar", "Sisli", 6.4);
+            AddRouteWithTraffic("Uskudar", "Mecidiyekoy", 6.1);
+            AddRouteWithTraffic("Zincirlikuyu", "Mecidiyekoy", 2.1);
+            AddRouteWithTraffic("Zincirlikuyu", "Besiktas", 2.2);
+            AddRouteWithTraffic("Kabatas", "Levent", 4.9);
+            AddRouteWithTraffic("Levent", "Sisli", 2.0);
+            AddRouteWithTraffic("Levent", "Mecidiyekoy", 1.9);
+            AddRouteWithTraffic("Mecidiyekoy", "Besiktas", 2.8);
+            AddRouteWithTraffic("Sisli", "Besiktas", 2.2);
+            AddRouteWithTraffic("Taksim", "Mecidiyekoy", 2.5);
+            AddRouteWithTraffic("Topkapi", "Kabatas", 5.2);
+            AddRouteWithTraffic("Yenikapi", "Taksim", 4.5);
+            AddRouteWithTraffic("Aksaray", "Kabatas", 3.9);
             AddRouteWithTraffic("Fatih", "Levent", 5.8);
             AddRouteWithTraffic("Fatih", "Zincirlikuyu", 6.1);
-            AddRouteWithTraffic("�sk�dar", "Be�ikta�", 4.4); // alternatif mesafe
-            AddRouteWithTraffic("Kad�k�y", "Mecidiyek�y", 7.8);
+            AddRouteWithTraffic("Uskudar", "Besiktas", 4.4);
+            AddRouteWithTraffic("Kadikoy", "Mecidiyekoy", 7.8);
         }
 
 

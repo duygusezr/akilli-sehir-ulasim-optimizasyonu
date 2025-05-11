@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "+4A07imTJKo=",
+  "dgSpecHash": "xpjR7Dyi9oI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\onur2\\Documents\\GitHub\\akilli-sehir-ulasim-optimizasyonu\\SmartCityTransportMVC\\SmartCityTransportMVC.csproj",
+  "projectFilePath": "C:\\Users\\sabod\\OneDrive\\Desktop\\1105veri\\SmartCityTransportMVC\\SmartCityTransportMVC.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\onur2\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+    "C:\\Users\\sabod\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
   ],
   "logs": []
 }
