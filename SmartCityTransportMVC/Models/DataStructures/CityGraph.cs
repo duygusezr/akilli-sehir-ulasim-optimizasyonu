@@ -23,14 +23,20 @@ namespace SmartCityTransportMVC.Models.DataStructures
 
         public Dictionary<string, (double lat, double lng)> GetCoords() => Nodes;
 
-        public List<List<string>> FindKShortestPaths(string start, string end, int k = 3)
+        public List<List<string>> FindKShortestPaths(string start, string end, int k = 3, int timeoutMilliseconds = 2000)
         {
             var result = new List<List<string>>();
             var queue = new PriorityQueue<(List<string> Path, double Dist), double>();
             queue.Enqueue((new List<string> { start }, 0), 0);
 
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
             while (queue.Count > 0 && result.Count < k)
             {
+               
+                if (stopwatch.ElapsedMilliseconds > timeoutMilliseconds)
+                    break;
+
                 var (path, dist) = queue.Dequeue();
                 var last = path.Last();
 
@@ -55,10 +61,12 @@ namespace SmartCityTransportMVC.Models.DataStructures
                 }
             }
 
+            stopwatch.Stop();
             return result;
         }
 
- 
+
+
         public double CalculateTotalDistance(List<string> path)
         {
             double total = 0;
