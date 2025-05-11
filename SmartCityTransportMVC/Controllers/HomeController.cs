@@ -32,67 +32,94 @@ namespace SmartCityTransportMVC.Controllers
 
 
        [HttpPost]
-        public IActionResult FindRoute(RouteRequest request)
-        {
-            if (string.IsNullOrEmpty(request.Start) || string.IsNullOrEmpty(request.End))
-            {
-                ViewBag.Error = "Baslangic ve bitis duraklari girilmelidir.";
-                return View("Index");
-            }
+public IActionResult FindRoute(RouteRequest request)
+{
+    if (string.IsNullOrEmpty(request.Start) || string.IsNullOrEmpty(request.End))
+    {
+        ViewBag.Error = "Başlangıç ve bitiş durakları girilmelidir.";
+        return View("Index");
+    }
 
-            var alternativePaths = _cityGraph.FindKShortestPaths(request.Start, request.End, 3);
+    // Türkçe karakterleri normalize eden yardımcı fonksiyon
+    string Normalize(string text) =>
+        text.Trim().ToLower()
+            .Replace("ı", "i")
+            .Replace("ğ", "g")
+            .Replace("ü", "u")
+            .Replace("ş", "s")
+            .Replace("ö", "o")
+            .Replace("ç", "c");
 
-            if (alternativePaths.Count == 0)
-            {
-                ViewBag.Error = $"{request.Start} ile {request.End} arasinda alternatif rota bulunamadi.";
-                return View("Index");
-            }
+    // Normalize edilmiş girişler
+    string startInput = Normalize(request.Start);
+    string endInput = Normalize(request.End);
 
-            var alternatives = new List<(List<string> Route, List<double> Traffic, double TotalTraffic, double Distance)>();
+    // Tüm durakları al ve normalize eşleşme yap
+    var allStops = _cityGraph.GetCoords().Keys.ToList();
 
-            foreach (var path in alternativePaths)
-            {
-                var traffic = _trafficTable.GetTrafficData(path);
-                double totalTraffic = traffic.Sum();
-                double distance = _cityGraph.CalculateTotalDistance(path);
-                alternatives.Add((path, traffic, totalTraffic, distance));
-            }
+    var startMatch = allStops.FirstOrDefault(s => Normalize(s) == startInput);
+    var endMatch = allStops.FirstOrDefault(s => Normalize(s) == endInput);
 
-            var original = alternatives.First(); // Kullan�c�n�n g�rd��� ilk rota (s�ralamaya g�re)
+    if (startMatch == null || endMatch == null)
+    {
+        ViewBag.Error = $"'{request.Start}' veya '{request.End}' adında bir durak bulunamadı.";
+        return View("Index");
+    }
 
-            // %70 alt� t�m segmentlerden olu�an rotalar� filtrele
-            var optimizables = alternatives.Where(a => a.Traffic.All(t => t < 0.7)).ToList();
+    // Güvenli eşleşmiş değerleri ata
+    string start = startMatch;
+    string end = endMatch;
 
-            // En iyi rota
-            var best = optimizables.Any()
-                ? optimizables.OrderBy(a => a.TotalTraffic).First()
-                : alternatives.OrderBy(a => a.TotalTraffic).First();
+    // Rota bul
+    var alternativePaths = _cityGraph.FindKShortestPaths(start, end, 3);
 
-            bool isOptimized = optimizables.Any();
-            bool areSame = best.Route.SequenceEqual(original.Route);
+    if (alternativePaths.Count == 0)
+    {
+        ViewBag.Error = $"{request.Start} ile {request.End} arasında alternatif rota bulunamadı.";
+        return View("Index");
+    }
 
-            var comparisonList = new List<(List<string> Route, List<double> Traffic, string Label, bool IsOptimized)>();
+    var alternatives = new List<(List<string> Route, List<double> Traffic, double TotalTraffic, double Distance)>();
 
-            comparisonList.Add((best.Route, best.Traffic, "1. Tercih", true));
+    foreach (var path in alternativePaths)
+    {
+        var traffic = _trafficTable.GetTrafficData(path);
+        double totalTraffic = traffic.Sum();
+        double distance = _cityGraph.CalculateTotalDistance(path);
+        alternatives.Add((path, traffic, totalTraffic, distance));
+    }
 
-            var second = alternatives
-                .Where(a => !a.Route.SequenceEqual(best.Route))
-                .OrderBy(a => a.TotalTraffic)
-                .FirstOrDefault();
+    var original = alternatives.First();
 
-            if (second.Route != null)
-            {
-                comparisonList.Add((second.Route, second.Traffic, "2. Tercih", false));
-            }
+    var optimizables = alternatives.Where(a => a.Traffic.All(t => t < 0.7)).ToList();
 
+    var best = optimizables.Any()
+        ? optimizables.OrderBy(a => a.TotalTraffic).First()
+        : alternatives.OrderBy(a => a.TotalTraffic).First();
 
-            ViewBag.RouteComparison = comparisonList;
-            ViewBag.Coords = _cityGraph.GetCoords();
-            ViewBag.Route = best.Route;
-            ViewBag.Traffic = best.Traffic;
+    var comparisonList = new List<(List<string> Route, List<double> Traffic, string Label, bool IsOptimized)>
+    {
+        (best.Route, best.Traffic, "1. Tercih", true)
+    };
 
-            return View("Index");
-        }
+    var second = alternatives
+        .Where(a => !a.Route.SequenceEqual(best.Route))
+        .OrderBy(a => a.TotalTraffic)
+        .FirstOrDefault();
+
+    if (second.Route != null)
+    {
+        comparisonList.Add((second.Route, second.Traffic, "2. Tercih", false));
+    }
+
+    ViewBag.RouteComparison = comparisonList;
+    ViewBag.Coords = _cityGraph.GetCoords();
+    ViewBag.Route = best.Route;
+    ViewBag.Traffic = best.Traffic;
+
+    return View("Index");
+}
+
         private void InitializeData()
         {
             var stops = new Dictionary<string, (double, double)>
