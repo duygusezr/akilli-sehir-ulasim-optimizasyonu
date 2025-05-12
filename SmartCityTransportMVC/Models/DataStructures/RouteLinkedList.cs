@@ -1,16 +1,36 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace SmartCityTransportMVC.Models.DataStructures
 {
     public class RouteLinkedList
     {
-        public List<string> OptimizeRoute(List<string> route, List<double> trafficData)
+        public LinkedList<string> OptimizeRoute(List<string> route, List<double> trafficData)
         {
-            return route.Zip(trafficData, (stop, traffic) => (stop, traffic))
-                        .Where(x => x.traffic < 0.7)
-                        .Select(x => x.stop)
-                        .ToList();
+            // Bağlı listeye rota verilerini aktar
+            var linkedRoute = new LinkedList<string>(route);
+
+            var current = linkedRoute.First;
+            int index = 0;
+
+            while (current != null && current.Next != null && index < trafficData.Count)
+            {
+                var next = current.Next;
+                double traffic = trafficData[index];
+
+                // Eğer trafik yoğunluğu 0.7 veya üzeriyse, sonraki durağı sil
+                if (traffic >= 0.7)
+                {
+                    linkedRoute.Remove(next);
+                }
+                else
+                {
+                    current = current.Next;
+                }
+
+                index++;
+            }
+
+            return linkedRoute;
         }
     }
 }
